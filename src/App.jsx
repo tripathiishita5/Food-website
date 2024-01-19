@@ -1,6 +1,8 @@
 import './App.css'
 import { useState, useEffect } from 'react';
+
 const Header = () =>{
+  const [btnName, setBtnName] = useState("Login");
   return(
     <div className="header">
       <div className="logo">
@@ -13,6 +15,9 @@ const Header = () =>{
           <li>Cart</li>
           <li>About us</li>
           <li>Contact</li>
+          <button className='login-btn' onClick={() =>{
+            btnName === "Login" ? setBtnName("Logout") : setBtnName("Login");
+          }}>{btnName}</button>
         </ul>
       </div>
 
@@ -21,30 +26,58 @@ const Header = () =>{
 }
 
 const Body = () =>{
-    let [ListOfRestaurants, setListOfRestaurants] = useState(resObj);   // local state variable
+    const [ListOfRestaurants, setListOfRestaurants] = useState([]);   // local state variable
+    const [filteredRest, setFilteredRest] = useState([]);
+    const [allresturent, setAllresturent] =useState(null);
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
       fetchData();
     }, []);
 
     const fetchData = async () =>{
-      const data = await fetch("https://www.swiggy.com/dapi/restaurants/list/v5?lat=25.3270644&lng=82.9862236&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING");
+      const data = await fetch("https://www.swiggy.com/dapi/restaurants/list/v5?lat=28.7040592&lng=77.10249019999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING");
       const json = await data.json();
-      console.log(json);
-      setListOfRestaurants = (json.data.cards[2].imageGridCards);
-    }
 
-  return(
+      setListOfRestaurants(json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants);     // optional chaining
+      setAllresturent(json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
+      setFilteredRest(json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
+    };
+
+    // if(ListOfRestaurants.length === 0){    // conditional rendering
+    //   return <Shimmer/>;
+    // }
+
+  return ListOfRestaurants.length === 0 ? (<Shimmer/>) : (      // conditional rendering using ternary operator
     <div className='body'>
       <div className="filter">
+
+        <div className='search'>
+          <input type='text' className='search-box' value={searchText} onChange={(e) => {
+            setSearchText(e.target.value);
+          }}/>
+
+          <button className='filter-btn' onClick={() =>{
+            console.log(searchText);
+            const filterRes = ListOfRestaurants.filter((res) => res.info.name.toLowerCase().includes(searchText.toLowerCase()));
+            setFilteredRest(filterRes);
+          }}>Search</button>
+        </div>
+
         <button className='filter-btn' onClick={() =>{
             const filteredResObj = ListOfRestaurants.filter((res) => res.info.avgRating>4);
-            setListOfRestaurants(filteredResObj);
+            setFilteredRest(filteredResObj);
         }}>Top Rated Restaurants</button>
+
+
+         <button className='filter-btn' onClick={() =>{
+            setFilteredRest(allresturent);
+        }}>All Resturents</button>  
+
        </div>
       <div className='res-cont'>
         {
-          resObj.map((restaurant) => (<ResturantCard key={restaurant.info.id} resData={restaurant}/>))
+          filteredRest.map((restaurant) => (<ResturantCard key={restaurant.info.id} resData={restaurant}/>))
         }
       </div>
     </div>
@@ -64,196 +97,26 @@ const ResturantCard = (props) =>{
       </div>
   )
 }
-// const styleCard = {
-//   backgroundColor: "#f0f0f0",
-// }
 
-let resObj = [{
-  "info": {
-      "id": "253772",
-      "name": "McDonald's",
-      "cloudinaryImageId": "6dc3ed2ca21d71acff7c2a51dfe4c720",
-      "locality": "Shastri Nagar",
-      "areaName": "Sigra",
-      "costForTwo": "₹400 for two",
-      "cuisines": [
-          "American"
-      ],
-      "avgRating": 4.4,
-      "parentId": "630",
-      "avgRatingString": "4.4",
-      "totalRatingsString": "10K+",
-      "sla": {
-          "deliveryTime": 22,
-          "lastMileTravel": 2.9,
-          "serviceability": "SERVICEABLE",
-          "slaString": "22 mins",
-          "lastMileTravelString": "2.9 km",
-          "iconType": "ICON_TYPE_EMPTY"
-      },
-      "availability": {
-          "nextCloseTime": "2024-01-14 23:50:00",
-          "opened": true
-      },
-      "badges": {},
-      "isOpen": true,
-      "type": "F",
-      "badgesV2": {
-          "entityBadges": {
-              "imageBased": {},
-              "textBased": {},
-              "textExtendedBadges": {}
-          }
-      },
-      "aggregatedDiscountInfoV3": {
-          "header": "₹120 OFF",
-          "subHeader": "ABOVE ₹199",
-          "discountTag": "FLAT DEAL"
-      },
-      "differentiatedUi": {
-          "displayType": "ADS_UI_DISPLAY_TYPE_ENUM_DEFAULT",
-          "differentiatedUiMediaDetails": {
-              "mediaType": "ADS_MEDIA_ENUM_IMAGE",
-              "lottie": {},
-              "video": {}
-          }
-      },
-      "reviewsSummary": {},
-      "displayType": "RESTAURANT_DISPLAY_TYPE_DEFAULT",
-      "restaurantOfferPresentationInfo": {}
-  },
-  "analytics": {},
-  "cta": {
-      "link": "https://www.swiggy.com/restaurants/mcdonalds-shastri-nagar-sigra-varanasi-253772",
-      "type": "WEBLINK"
-  }
-},{    
-  "info": {
-  "id": "94756",
-  "name": "Tandoor Villa",
-  "cloudinaryImageId": "1770c3aa3eecdc44f5f480f07f09c186",
-  "locality": "Chaukaghat",
-  "areaName": "Nadesar",
-  "costForTwo": "₹400 for two",
-  "cuisines": [
-      "Mughlai",
-      "Indian",
-      "Biryani"
-  ],
-  "avgRating": 4.3,
-  "parentId": "200636",
-  "avgRatingString": "4.3",
-  "totalRatingsString": "1K+",
-  "sla": {
-      "deliveryTime": 24,
-      "lastMileTravel": 3,
-      "serviceability": "SERVICEABLE",
-      "slaString": "24 mins",
-      "lastMileTravelString": "3.0 km",
-      "iconType": "ICON_TYPE_EMPTY"
-  },
-  "availability": {
-      "nextCloseTime": "2024-01-14 23:30:00",
-      "opened": true
-  },
-  "badges": {},
-  "isOpen": true,
-  "type": "F",
-  "badgesV2": {
-      "entityBadges": {
-          "imageBased": {},
-          "textBased": {},
-          "textExtendedBadges": {}
-      }
-  },
-  "aggregatedDiscountInfoV3": {
-      "header": "₹120 OFF",
-      "subHeader": "ABOVE ₹199",
-      "discountTag": "FLAT DEAL"
-  },
-  "differentiatedUi": {
-      "displayType": "ADS_UI_DISPLAY_TYPE_ENUM_DEFAULT",
-      "differentiatedUiMediaDetails": {
-          "mediaType": "ADS_MEDIA_ENUM_IMAGE",
-          "lottie": {},
-          "video": {}
-      }
-  },
-  "reviewsSummary": {},
-  "displayType": "RESTAURANT_DISPLAY_TYPE_DEFAULT",
-  "restaurantOfferPresentationInfo": {}
-},
-"analytics": {},
-"cta": {
-  "link": "https://www.swiggy.com/restaurants/tandoor-villa-chaukaghat-nadesar-varanasi-94756",
-  "type": "WEBLINK"
+const Shimmer = () =>{
+  return(
+    <div className='shimmer-cont'>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+      <div className='shimmer-card'></div>
+    </div>
+  )
 }
-},{    
-  "info": {
-  "id": "433786",
-  "name": "The Good Bowl",
-  "cloudinaryImageId": "6e04be27387483a7c00444f8e8241108",
-  "locality": "Raja Moti Chand Road",
-  "areaName": "Mahmoorganj",
-  "costForTwo": "₹400 for two",
-  "cuisines": [
-      "Biryani",
-      "North Indian",
-      "Pastas",
-      "Punjabi",
-      "Desserts",
-      "Beverages"
-  ],
-  "avgRating": 4.2,
-  "parentId": "7918",
-  "avgRatingString": "4.2",
-  "totalRatingsString": "500+",
-  "sla": {
-      "deliveryTime": 26,
-      "lastMileTravel": 3.5,
-      "serviceability": "SERVICEABLE",
-      "slaString": "26 mins",
-      "lastMileTravelString": "3.5 km",
-      "iconType": "ICON_TYPE_EMPTY"
-  },
-  "availability": {
-      "nextCloseTime": "2024-01-14 23:59:00",
-      "opened": true
-  },
-  "badges": {},
-  "isOpen": true,
-  "type": "F",
-  "badgesV2": {
-      "entityBadges": {
-          "imageBased": {},
-          "textBased": {},
-          "textExtendedBadges": {}
-      }
-  },
-  "aggregatedDiscountInfoV3": {
-      "header": "₹120 OFF",
-      "subHeader": "ABOVE ₹199",
-      "discountTag": "FLAT DEAL"
-  },
-  "differentiatedUi": {
-      "displayType": "ADS_UI_DISPLAY_TYPE_ENUM_DEFAULT",
-      "differentiatedUiMediaDetails": {
-          "mediaType": "ADS_MEDIA_ENUM_IMAGE",
-          "lottie": {},
-          "video": {}
-      }
-  },
-  "reviewsSummary": {},
-  "displayType": "RESTAURANT_DISPLAY_TYPE_DEFAULT",
-  "restaurantOfferPresentationInfo": {}
-},
-"analytics": {},
-"cta": {
-  "link": "https://www.swiggy.com/restaurants/the-good-bowl-raja-moti-chand-road-mahmoorganj-varanasi-433786",
-  "type": "WEBLINK"
-}
-}];
-
 
 function App() {
   return (
