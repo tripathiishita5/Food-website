@@ -80,7 +80,9 @@ export const Body = () =>{
        </div>
       <div className='res-cont'>
         {
-          filteredRest.map((restaurant) => (<ResturantCard key={restaurant.info.id} resData={restaurant}/>))
+          filteredRest.map((restaurant) => (
+          <Link key={restaurant.info.id} to={"/restaurants/" + restaurant.info.id}> <ResturantCard resData={restaurant}/> </Link>
+          ))
         }
       </div>
     </div>
@@ -101,7 +103,7 @@ const ResturantCard = (props) =>{
   )
 }
 
-const Shimmer = () =>{
+export const Shimmer = () =>{
   return(
     <div className='shimmer-cont'>
       <div className='shimmer-card'></div>

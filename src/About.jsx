@@ -1,4 +1,4 @@
-const About = () => {
+export const About = () => {
     return(
         <div>
             <h1>About</h1>
@@ -6,4 +6,11 @@ const About = () => {
         </div>
     )
 }
-export default About;
+export const Contact = () => {
+    return(
+        <div>
+            <h1>Contact Us....</h1>
+            <h2>Instagram, Gmail</h2>
+        </div>
+    )
+}
