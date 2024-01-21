@@ -1,5 +1,7 @@
+import { Outlet } from 'react-router-dom';
 import './App.css'
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () =>{
   const [btnName, setBtnName] = useState("Login");
@@ -11,10 +13,11 @@ const Header = () =>{
 
       <div className="nav-items">
         <ul>
-          <li>Home</li>
-          <li>Cart</li>
-          <li>About us</li>
-          <li>Contact</li>
+          <li><Link to="/"> Home </Link></li>
+          <li><Link to="/cart"> Cart </Link></li>
+          <li><Link to="/about"> About Us </Link></li>
+          <li><Link to="/contact"> Contact Us </Link></li>
+
           <button className='login-btn' onClick={() =>{
             btnName === "Login" ? setBtnName("Logout") : setBtnName("Login");
           }}>{btnName}</button>
@@ -25,7 +28,7 @@ const Header = () =>{
   )
 }
 
-const Body = () =>{
+export const Body = () =>{
     const [ListOfRestaurants, setListOfRestaurants] = useState([]);   // local state variable
     const [filteredRest, setFilteredRest] = useState([]);
     const [allresturent, setAllresturent] =useState(null);
@@ -129,9 +132,9 @@ function App() {
   return (
     <div className="app">
       <Header/>
-      <Body/>
+      <Outlet/>      
     </div>
   )
 }
-
-export default App
+//body, contact, about, etc. will be replaced in the place of outlet when we are on that routes.
+export default App;
