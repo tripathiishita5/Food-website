@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import './App.css'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import useOnlineStatus from './utils/useOnlineStatus';
 
 const Header = () =>{
   const [btnName, setBtnName] = useState("Login");
@@ -50,6 +51,9 @@ export const Body = () =>{
     // if(ListOfRestaurants.length === 0){    // conditional rendering
     //   return <Shimmer/>;
     // }
+
+    const onlineStatus = useOnlineStatus();
+    if(onlineStatus === false) return <h1>Looks like you are offline! Please check your internet connection.</h1>
 
   return ListOfRestaurants.length === 0 ? (<Shimmer/>) : (      // conditional rendering using ternary operator
     <div className='body'>
