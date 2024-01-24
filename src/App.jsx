@@ -2,24 +2,25 @@ import { Outlet } from 'react-router-dom';
 import './App.css'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ResturantCard, {withPromotedLabel} from './RestaurantCard';
 import useOnlineStatus from './utils/useOnlineStatus';
 
 const Header = () =>{
   const [btnName, setBtnName] = useState("Login");
   return(
-    <div className="header">
+    <div className="header flex text-gray-600 body-font">
       <div className="logo">
-        <img className='logo-img' src="https://images-platform.99static.com//s_-2qgRrPZnWUpWIh4NeIu95UCE=/0x0:999x999/fit-in/500x500/99designs-contests-attachments/118/118612/attachment_118612943"/>
+        <img className='logo-img w-40' src="https://images-platform.99static.com//s_-2qgRrPZnWUpWIh4NeIu95UCE=/0x0:999x999/fit-in/500x500/99designs-contests-attachments/118/118612/attachment_118612943"/>
       </div>
 
-      <div className="nav-items">
-        <ul>
-          <li><Link to="/"> Home </Link></li>
-          <li><Link to="/cart"> Cart </Link></li>
-          <li><Link to="/about"> About Us </Link></li>
-          <li><Link to="/contact"> Contact Us </Link></li>
+      <div className="nav-items md:ml-auto flex flex-wrap items-center text-base justify-center">
+        <ul className='flex'>
+          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/"> Home </Link></li>
+          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/cart"> Cart </Link></li>
+          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/about"> About Us </Link></li>
+          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/contact"> Contact Us </Link></li>
 
-          <button className='login-btn' onClick={() =>{
+          <button className='login-btn inline-flex text-lg font-semibold bg-blue-200 border-0 px-5 mr-5 hover:bg-gray-200 rounded' onClick={() =>{
             btnName === "Login" ? setBtnName("Logout") : setBtnName("Login");
           }}>{btnName}</button>
         </ul>
@@ -34,6 +35,9 @@ export const Body = () =>{
     const [filteredRest, setFilteredRest] = useState([]);
     const [allresturent, setAllresturent] =useState(null);
     const [searchText, setSearchText] = useState('');
+    const ResCardPromoted = withPromotedLabel(ResturantCard);
+
+    console.log(ListOfRestaurants);
 
     useEffect(() => {
       fetchData();
@@ -57,53 +61,43 @@ export const Body = () =>{
 
   return ListOfRestaurants.length === 0 ? (<Shimmer/>) : (      // conditional rendering using ternary operator
     <div className='body'>
-      <div className="filter">
+      <div className="filter mb-5">
 
-        <div className='search'>
-          <input type='text' className='search-box' value={searchText} onChange={(e) => {
+        <div className='search flex justify-center'>
+          <input type='text' className='search-box rounded-md bg-gray-300 px-4 py-2 mr-2' value={searchText} onChange={(e) => {
             setSearchText(e.target.value);
           }}/>
 
-          <button className='filter-btn' onClick={() =>{
+          <button className='filter-btn inline-flex items-center text-lg font-medium bg-blue-200 border-0 px-4 py-2 mr-10 hover:bg-gray-200 rounded' onClick={() =>{
             console.log(searchText);
             const filterRes = ListOfRestaurants.filter((res) => res.info.name.toLowerCase().includes(searchText.toLowerCase()));
             setFilteredRest(filterRes);
           }}>Search</button>
-        </div>
 
-        <button className='filter-btn' onClick={() =>{
+          <button className='filter-btn inline-flex items-center text-lg font-medium bg-blue-200 border-0 px-5 mr-4 hover:bg-gray-200 rounded' onClick={() =>{
             const filteredResObj = ListOfRestaurants.filter((res) => res.info.avgRating>4);
             setFilteredRest(filteredResObj);
-        }}>Top Rated Restaurants</button>
+          }}>Top Rated Restaurants</button>
 
-
-         <button className='filter-btn' onClick={() =>{
+          <button className='filter-btn inline-flex items-center text-lg font-medium bg-blue-200 border-0 px-5 hover:bg-gray-200 rounded' onClick={() =>{
             setFilteredRest(allresturent);
-        }}>All Resturents</button>  
+          }}>All Resturents</button>
 
+        </div>
        </div>
-      <div className='res-cont'>
+      <div className='res-cont flex flex-wrap gap-4 px-3'>
         {
           filteredRest.map((restaurant) => (
-          <Link key={restaurant.info.id} to={"/restaurants/" + restaurant.info.id}> <ResturantCard resData={restaurant}/> </Link>
+          <Link key={restaurant.info.id} to={"/restaurants/" + restaurant.info.id}>
+            {
+              (restaurant.info.sla.deliveryTime < 20) ? (<ResCardPromoted resData={restaurant}/>) : (<ResturantCard resData={restaurant}/>)
+            }
+             
+          </Link>
           ))
         }
       </div>
     </div>
-  )
-}
-
-
-const ResturantCard = (props) =>{
-  const {resData} = props;
-  const {cloudinaryImageId, name, cuisines, avgRating} = resData?.info;
-  return(
-      <div className="res-card">
-          <img src={"https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/"+cloudinaryImageId}/>
-          <h3>{name}</h3>
-          <h4>{cuisines.join(", ")}</h4>
-          <h4>{avgRating}</h4>
-      </div>
   )
 }
 
