@@ -6,7 +6,7 @@ const ItemList = ({items}) => {
             <div key={item.card.info.id} className="p-2 border-gray-300 border-b-2 text-left flex justify-between items-center">
                 <div className="w-[80%]">
                  <span className="py-2 font-semibold">{item.card.info.name}</span>
-                 <span className="font-semibold"> - ₹{item.card.info.price ? item.card.info.price/100 : item.card.info.defaultPrice/100}</span>
+                 <span className="py-2 font-semibold"> - ₹{item.card.info.price ? item.card.info.price/100 : item.card.info.defaultPrice/100}</span>
                  <p className="text-sm leading-1 text-wrap">{item.card.info.description}</p>
                 </div>
                 <div className="w-[20%] relative rounded-md bg-green-100 bg-cover bg-center">

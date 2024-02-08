@@ -59,7 +59,7 @@ export const Body = () =>{
     const onlineStatus = useOnlineStatus();
     if(onlineStatus === false) return <h1>Looks like you are offline! Please check your internet connection.</h1>
 
-  return ListOfRestaurants.length === 0 ? (<Shimmer/>) : (      // conditional rendering using ternary operator
+  return (ListOfRestaurants && ListOfRestaurants.length) === 0 ? (<Shimmer/>) : (      // conditional rendering using ternary operator
     <div className='body'>
       <div className="filter mb-5">
 
@@ -85,18 +85,19 @@ export const Body = () =>{
 
         </div>
        </div>
-      <div className='res-cont flex flex-wrap gap-4 px-3'>
-        {
-          filteredRest.map((restaurant) => (
-          <Link key={restaurant.info.id} to={"/restaurants/" + restaurant.info.id}>
-            {
-              (restaurant.info.sla.deliveryTime < 20) ? (<ResCardPromoted resData={restaurant}/>) : (<ResturantCard resData={restaurant}/>)
-            }
-             
-          </Link>
-          ))
-        }
-      </div>
+       <div className='res-cont flex flex-wrap gap-4 px-3'>
+                {filteredRest && filteredRest.length > 0 ? (
+                    filteredRest.map((restaurant) => (
+                        <Link key={restaurant.info.id} to={"/restaurants/" + restaurant.info.id}>
+                            {
+                                (restaurant.info.sla.deliveryTime < 20) ? (<ResCardPromoted resData={restaurant} />) : (<ResturantCard resData={restaurant} />)
+                            }
+                        </Link>
+                    ))
+                ) : (
+                    <div>No restaurants found.</div>
+                )}
+            </div>
     </div>
   )
 }
