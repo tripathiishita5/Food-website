@@ -4,9 +4,20 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ResturantCard, {withPromotedLabel} from './RestaurantCard';
 import useOnlineStatus from './utils/useOnlineStatus';
+import { Provider } from 'react';
+import {appStore} from './utils/appStore';
+import { changePage} from "./utils/cartSlice";
+import {useDispatch, useSelector} from "react-redux";
 
 const Header = () =>{
   const [btnName, setBtnName] = useState("Login");
+   const dispatch=useDispatch()
+  // subscribing to the store using selector (a hook - normal js function)
+  const cartItems = useSelector((store) => store.cart.items);
+  console.log(cartItems);
+   const handleClick=()=>{
+     dispatch(changePage())
+   }
   return(
     <div className="header flex text-gray-600 body-font">
       <div className="logo">
@@ -15,8 +26,8 @@ const Header = () =>{
 
       <div className="nav-items md:ml-auto flex flex-wrap items-center text-base justify-center">
         <ul className='flex'>
-          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/"> Home </Link></li>
-          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/cart"> Cart </Link></li>
+          <li className="mr-5 hover:text-gray-900 text-lg font-semibold"onClick={()=>{handleClick()}}><Link to="/"> Home </Link></li>
+          <li className="mr-5 hover:text-gray-900 text-lg font-semibold" onClick={()=>{handleClick()}}><Link to="/cart"> Cart ({cartItems.length} items) </Link></li>
           <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/about"> About Us </Link></li>
           <li className="mr-5 hover:text-gray-900 text-lg font-semibold"><Link to="/contact"> Contact Us </Link></li>
 
@@ -135,7 +146,7 @@ function App() {
       <Header/>
       <Outlet/>      
     </div>
-  )
-}
+  );
+};
 //body, contact, about, etc. will be replaced in the place of outlet when we are on that routes.
 export default App;

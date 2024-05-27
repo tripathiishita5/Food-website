@@ -9,7 +9,7 @@ const RestaurantMenu = () =>{
     const resInfo = useRestaurantMenu(resId);
     const [showIndex, setShowIndex] = useState(0);
 
-    if(resInfo === null) return <Shimmer/>
+    if(resInfo === null || resInfo === undefined) return <Shimmer/>
     const {name, cuisines, costForTwoMessage} =resInfo?.cards[0]?.card?.card?.info;
 
     const {itemCards} = resInfo?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card?.card;
